@@ -3,7 +3,7 @@ import torch.nn as nn
 from .caml import CAML
 from .kim_cnn import KimCNN
 from .xml_cnn import XMLCNN
-from .xml_cnn_v0 import XMLCNNv0
+from .xml_cnn_liu import XMLCNNLiu
 
 
 def get_init_weight_func(init_weight):

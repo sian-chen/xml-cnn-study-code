@@ -52,6 +52,8 @@ def get_config():
                         help='The maximum number of tokens of a sample (default: %(default)s)')
     parser.add_argument('--shuffle', type=bool, default=True,
                         help='Whether to shuffle training data before each epoch (default: %(default)s)')
+    parser.add_argument('--fixed_length', action='store_true',
+                        help='Whether to pad all sequence to MAX_SEQ_LENGTH (default: %(default)s)')
 
     # train
     parser.add_argument('--seed', type=int,
