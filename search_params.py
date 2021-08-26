@@ -85,7 +85,6 @@ class Trainable(tune.Trainable):
             device=self.device,
             max_seq_length=self.config.max_seq_length,
             batch_size=self.config.eval_batch_size,
-            shuffle=self.config.shuffle,
             data_workers=self.config.data_workers
         )
 
@@ -104,7 +103,6 @@ class Trainable(tune.Trainable):
                 device=self.device,
                 max_seq_length=self.config.max_seq_length,
                 batch_size=self.config.eval_batch_size,
-                shuffle=self.config.shuffle,
                 data_workers=self.config.data_workers
             )
             test_metric_dict = trainer.test(
