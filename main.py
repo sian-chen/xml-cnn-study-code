@@ -229,6 +229,7 @@ def main():
             max_seq_length=config.max_seq_length,
             batch_size=config.batch_size,
             shuffle=config.shuffle,
+            fixed_length=config.fixed_length,
             data_workers=config.data_workers
         )
         val_loader = data_utils.get_dataset_loader(
@@ -238,6 +239,7 @@ def main():
             device=device,
             max_seq_length=config.max_seq_length,
             batch_size=config.eval_batch_size,
+            fixed_length=config.fixed_length,
             data_workers=config.data_workers
         )
 
@@ -254,6 +256,7 @@ def main():
             device=device,
             max_seq_length=config.max_seq_length,
             batch_size=config.eval_batch_size,
+            fixed_length=config.fixed_length,
             data_workers=config.data_workers
         )
         trainer.test(model, test_dataloaders=test_loader)

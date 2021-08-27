@@ -76,6 +76,7 @@ class Trainable(tune.Trainable):
             max_seq_length=self.config.max_seq_length,
             batch_size=self.config.batch_size,
             shuffle=self.config.shuffle,
+            fixed_length=self.config.fixed_length,
             data_workers=self.config.data_workers
         )
         val_loader = data_utils.get_dataset_loader(
@@ -85,6 +86,7 @@ class Trainable(tune.Trainable):
             device=self.device,
             max_seq_length=self.config.max_seq_length,
             batch_size=self.config.eval_batch_size,
+            fixed_length=self.config.fixed_length,
             data_workers=self.config.data_workers
         )
 
@@ -103,6 +105,7 @@ class Trainable(tune.Trainable):
                 device=self.device,
                 max_seq_length=self.config.max_seq_length,
                 batch_size=self.config.eval_batch_size,
+                fixed_length=self.config.fixed_length,
                 data_workers=self.config.data_workers
             )
             test_metric_dict = trainer.test(

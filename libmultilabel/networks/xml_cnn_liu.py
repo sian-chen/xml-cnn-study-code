@@ -31,7 +31,6 @@ class XMLCNNLiu(BaseModel):
         self,
         embed_vecs,
         num_classes,
-        dropout=0.2,
         dropout2=0.2,
         conv_stride=1,
         filter_sizes=None,
@@ -39,10 +38,9 @@ class XMLCNNLiu(BaseModel):
         num_filter_per_size=256,
         max_seq_length=500,
         pool_size=2,
-        activation='relu',
         **kwargs
     ):
-        super(XMLCNNLiu, self).__init__(embed_vecs, dropout, activation)
+        super(XMLCNNLiu, self).__init__(embed_vecs, **kwargs)
         if not filter_sizes:
             raise ValueError(
                 f'XMLCNN expect filter_sizes. Got filter_sizes={filter_sizes}')
@@ -61,7 +59,7 @@ class XMLCNNLiu(BaseModel):
             )
             self.convs.append(conv)
             conv_output_size = out_size(max_seq_length, filter_size, stride=conv_stride)
-            total_output_size += num_filter_per_size * out_size(conv_output_size, pool_size, stride=pool_size)
+            total_output_size += num_filter_per_size * out_size(conv_output_size, pool_size, stride=1)
 
         self.dropout2 = nn.Dropout(dropout2)
         self.linear1 = nn.Linear(total_output_size, hidden_dim)
@@ -75,7 +73,7 @@ class XMLCNNLiu(BaseModel):
         h_list = []
         for conv in self.convs:
             h_sub = conv(h) # (batch_size, num_filter, length)
-            h_sub = F.max_pool1d(h_sub, kernel_size=self.pool_size, stride=self.pool_size) # (batch_size, num_filter, num_pool)
+            h_sub = F.max_pool1d(h_sub, kernel_size=self.pool_size, stride=1) # (batch_size, num_filter, num_pool)
             h_sub = h_sub.view(h_sub.shape[0], -1) # (batch_size, num_filter * num_pool)
             h_list.append(h_sub)
 
@@ -93,4 +91,3 @@ class XMLCNNLiu(BaseModel):
         h = self.dropout2(h)
         h = self.linear2(h)
         return {'logits': h}
-
