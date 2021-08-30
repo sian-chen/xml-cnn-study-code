@@ -20,7 +20,7 @@ monitor_metrics: [P@1, P@3, P@5]
 val_metric: P@1
 
 # model
-model_name: KimCNN
+model_name: KimCNNv2
 num_filter_per_size: ['choice', [96, 192, 384, 768]] # filter channels
 filter_sizes: [8]
 dropout: ['choice', [0.2, 0.4, 0.6, 0.8]]
