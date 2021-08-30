@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from argparse import Namespace
 
+import collections
 import numpy as np
 import pytorch_lightning as pl
 import torch
@@ -169,4 +170,23 @@ class Model(MultiLabelModel):
         outputs = self.network(batch['text'])
         pred_logits = outputs['logits']
         loss = F.binary_cross_entropy_with_logits(pred_logits, target_labels.float())
+
         return loss, pred_logits
+
+    def extended_cross_entropy_loss(pred_logits, target_labels):
+        n = len(pred_logits)
+        L = pred_logits.shape[1] # shape: (num_sameples, label size)
+
+        pred_logits = F.softmax(pred_logits, dim=1)
+        row, col = np.where(pred_logits >= 0.5)
+        rel_cnts = {}
+        for r, c in zip(row, col):
+            if target_labels[r][c] == 1:
+                rel_cnts[r] += 1
+
+        loss = 0.
+        for i in range(n):
+            for j in range(L):
+                loss += torch.log(pred_logits[i][j]) / rel_cnts[i]
+
+        return -loss / n*L
