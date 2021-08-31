@@ -181,4 +181,4 @@ class Model(MultiLabelModel):
         loss = 0.
         for r, c in zip(rows, cols):
             loss += torch.log(pred_logits[r][c]) / rel_cnts[r]
-        return -loss / n # + 1e-10
+        return -loss / len(pred_logits) # + 1e-10
