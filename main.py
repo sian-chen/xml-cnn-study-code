@@ -126,6 +126,8 @@ def get_config():
                         help='For parameter search only: path to a directory for storing embeddings for multiple runs. (default: %(default)s)')
     parser.add_argument('--eval', action='store_true',
                         help='Only run evaluation on the test set (default: %(default)s)')
+    parser.add_argument('--use_extended_loss', action='store_true',
+                        help='Use extended binary cross entropy (default: %(default)s)')
     parser.add_argument('--checkpoint_path',
                         help='The checkpoint to warm-up with (default: %(default)s)')
     parser.add_argument('-h', '--help', action='help')
