@@ -169,25 +169,16 @@ class Model(MultiLabelModel):
         target_labels = batch['label']
         outputs = self.network(batch['text'])
         pred_logits = outputs['logits']
-        loss = F.binary_cross_entropy_with_logits(pred_logits, target_labels.float())
-        loss_ = self.extended_cross_entropy_loss(pred_logits, target_labels.float())
-        print(f'Loss: {loss}')
-        print(f'Extended BCE loss: {loss_}')
-
+        # _loss = F.binary_cross_entropy_with_logits(pred_logits, target_labels.float())
+        loss = self.extended_cross_entropy_loss(pred_logits, target_labels.float())
         return loss, pred_logits
 
     def extended_cross_entropy_loss(self, pred_logits, target_labels):
-        n = len(pred_logits)
-        L = pred_logits.shape[1] # shape: (num_sameples, label size)
-
-        rel_cnts = torch.sum(torch.where(pred_logits.double() >= 0.5, 1., 0.) * target_labels, dim=1)
+        rel_labels = torch.where(pred_logits.double() >= 0.5, 1., 0.) * target_labels
         pred_logits = F.softmax(pred_logits, dim=1)
-
+        rel_cnts = torch.sum(rel_labels, dim=1)
+        rows, cols = rel_labels.nonzero(as_tuple=True)
         loss = 0.
-        for i in range(n):
-            if rel_cnts[i] == 0:
-                continue
-            for j in range(L):
-                loss += torch.log(pred_logits[i][j]) / rel_cnts[i]
-
-        return -loss / n
+        for r, c in zip(rows, cols):
+            loss += torch.log(pred_logits[r][c]) / rel_cnts[r]
+        return -loss / n # + 1e-10
