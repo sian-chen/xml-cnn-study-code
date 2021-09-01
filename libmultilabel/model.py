@@ -178,11 +178,5 @@ class Model(MultiLabelModel):
         return loss, pred_logits
 
     def extended_cross_entropy_loss(self, pred_logits, target_labels):
-        rel_labels = torch.where(pred_logits.double() >= 0.5, 1., 0.) * target_labels
-        pred_logits = F.softmax(pred_logits, dim=1)
-        rel_cnts = torch.sum(rel_labels, dim=1)
-        rows, cols = rel_labels.nonzero(as_tuple=True)
-        loss = 0.
-        for r, c in zip(rows, cols):
-            loss += torch.log(pred_logits[r][c]) / rel_cnts[r]
-        return (-loss+1e-10) / len(pred_logits)
+        log_prob = F.log_softmax(pred_logits, dim=1)
+        return -torch.sum(log_prob * target_labels) / pred_logits.shape[0]
