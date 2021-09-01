@@ -175,7 +175,6 @@ class Model(MultiLabelModel):
             loss = self.extended_cross_entropy_loss(pred_logits, target_labels.float())
         else:
             loss = F.binary_cross_entropy_with_logits(pred_logits, target_labels.float())
-
         return loss, pred_logits
 
     def extended_cross_entropy_loss(self, pred_logits, target_labels):
@@ -186,4 +185,4 @@ class Model(MultiLabelModel):
         loss = 0.
         for r, c in zip(rows, cols):
             loss += torch.log(pred_logits[r][c]) / rel_cnts[r]
-        return -loss / len(pred_logits) # + 1e-10
+        return (-loss+1e-10) / len(pred_logits)
