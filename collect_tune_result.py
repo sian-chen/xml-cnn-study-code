@@ -52,8 +52,12 @@ def main():
     for exp_log_path in glob.glob('*/experiment_state-*.json'):
         print(exp_log_path)
         df = read_exp_log(exp_log_path)
-        data_name = df['data_name'][0]
-        model_name = df['model_name'][0]
+        try:
+            data_name = df['data_name'][0]
+            model_name = df['model_name'][0]
+        except Exception as e:
+            continue
+
         val_metric = 'val_' + VAL_METRIC[data_name]
         df = df.sort_values(val_metric, ascending=False)
         # write_xlsx(df, 'result.xlsx', data_name + ' ' + model_name,
