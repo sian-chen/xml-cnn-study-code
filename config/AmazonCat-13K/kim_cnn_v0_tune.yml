@@ -54,3 +54,4 @@ test_path: data/AmazonCat-13K/test.txt
 train_path: data/AmazonCat-13K/train.txt
 val_path: null
 val_size: 0.2
+use_extended_loss: false
