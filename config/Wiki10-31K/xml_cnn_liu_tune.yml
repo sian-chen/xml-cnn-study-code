@@ -59,3 +59,4 @@ test_path: data/Wiki10-31K/test.txt
 train_path: data/Wiki10-31K/train.txt
 val_path: null
 val_size: 0.2
+use_extended_loss: false

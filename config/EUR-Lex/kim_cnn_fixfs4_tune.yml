@@ -22,7 +22,7 @@ val_metric: P@1
 # model
 model_name: KimCNN
 num_filter_per_size: ['choice', [96, 192, 384, 768]] # filter channels
-filter_sizes: [2]
+filter_sizes: [4]
 dropout: ['choice', [0.2, 0.4, 0.6, 0.8]]
 init_weight: kaiming_uniform
 activation: relu
@@ -51,5 +51,7 @@ result_dir: runs
 silent: true
 test_path: data/EUR-Lex/test.txt
 train_path: data/EUR-Lex/train.txt
+use_extended_loss: true
 val_path: null
 val_size: 0.2
+use_extended_loss: false

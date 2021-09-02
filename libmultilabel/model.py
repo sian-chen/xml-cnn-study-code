@@ -143,6 +143,7 @@ class Model(MultiLabelModel):
         word_dict,
         init_weight=None,
         log_path=None,
+        use_extended_loss=False,
         **kwargs
     ):
         self.save_hyperparameters()
@@ -150,6 +151,7 @@ class Model(MultiLabelModel):
         self.word_dict = word_dict
         self.classes = classes
         self.num_classes = len(self.classes)
+        self.use_extended_loss = use_extended_loss
         super().__init__(log_path=log_path, **kwargs)
 
         embed_vecs = self.word_dict.vectors
@@ -168,5 +170,13 @@ class Model(MultiLabelModel):
         target_labels = batch['label']
         outputs = self.network(batch['text'])
         pred_logits = outputs['logits']
-        loss = F.binary_cross_entropy_with_logits(pred_logits, target_labels.float())
+
+        if self.use_extended_loss:
+            loss = self.extended_cross_entropy_loss(pred_logits, target_labels.float())
+        else:
+            loss = F.binary_cross_entropy_with_logits(pred_logits, target_labels.float())
         return loss, pred_logits
+
+    def extended_cross_entropy_loss(self, pred_logits, target_labels):
+        log_prob = F.log_softmax(pred_logits, dim=1)
+        return -torch.sum(log_prob * target_labels) / pred_logits.shape[0]
