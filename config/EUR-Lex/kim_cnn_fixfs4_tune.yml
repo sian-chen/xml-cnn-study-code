@@ -54,3 +54,4 @@ train_path: data/EUR-Lex/train.txt
 use_extended_loss: true
 val_path: null
 val_size: 0.2
+use_extended_loss: false
