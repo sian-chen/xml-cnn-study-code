@@ -1,25 +1,22 @@
-import math
-
 import torch
 import torch.nn as nn
 
 from ..networks.base import BaseModel
 
 
-class XMLCNNv0(BaseModel):
+class XMLCNNnh(BaseModel):
     def __init__(
         self,
         embed_vecs,
         num_classes,
         dropout2=0.2,
         filter_sizes=[2, 4, 8],
-        hidden_dim=512,
         num_filter_per_size=256,
         num_pool=2,
         seed=None,
         **kwargs,
     ):
-        super(XMLCNNv0, self).__init__(embed_vecs, **kwargs)
+        super(XMLCNNnh, self).__init__(embed_vecs, **kwargs)
         assert seed is None, ("nn.AdaptiveMaxPool1d doesn't have a "
                                      "deterministic implementation but seed is"
                                      "specified. Please do not specify seed.")
@@ -40,7 +37,8 @@ class XMLCNNv0(BaseModel):
         self.pool = nn.AdaptiveMaxPool1d(output_size=num_pool)
 
         total_output_size = len(filter_sizes) * num_filter_per_size * num_pool
-        self.linear1 = nn.Linear(total_output_size, num_classes)
+        self.dropout2 = nn.Dropout(dropout2)
+        self.linear = nn.Linear(total_output_size, num_classes)
 
     def forward(self, text):
         h = self.embedding(text) # (batch_size, length, embed_dim)
@@ -64,5 +62,6 @@ class XMLCNNv0(BaseModel):
         h = self.activation(h) # (batch_size, total_num_filter)
 
         # linear output
-        h = self.linear1(h)
+        h = self.dropout2(h)
+        h = self.linear(h)
         return {'logits': h}

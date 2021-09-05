@@ -4,7 +4,7 @@ from .caml import CAML
 from .kim_cnn import KimCNN
 from .kim_cnn_v2 import KimCNNv2
 from .xml_cnn import XMLCNN
-from .xml_cnn_v0 import XMLCNNv0
+from .xml_cnn_nh import XMLCNNnh
 from .xml_cnn_liu import XMLCNNLiu
 
 
