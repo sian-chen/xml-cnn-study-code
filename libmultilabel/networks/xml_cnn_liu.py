@@ -38,6 +38,7 @@ class XMLCNNLiu(BaseModel):
         num_filter_per_size=256,
         max_seq_length=500,
         pool_size=2,
+        no_transpose=False,
         **kwargs
     ):
         super(XMLCNNLiu, self).__init__(embed_vecs, **kwargs)
@@ -46,19 +47,23 @@ class XMLCNNLiu(BaseModel):
                 f'XMLCNN expect filter_sizes. Got filter_sizes={filter_sizes}')
 
         self.pool_size = pool_size
+        self.no_transpose = no_transpose
         emb_dim = embed_vecs.shape[1]
 
         total_output_size = 0
         self.convs = nn.ModuleList()
         for filter_size in filter_sizes:
             conv = nn.Conv1d(
-                in_channels=emb_dim,
+                in_channels=max_seq_length if no_transpose else emb_dim,
                 out_channels=num_filter_per_size,
                 kernel_size=filter_size,
                 stride=conv_stride,
             )
             self.convs.append(conv)
-            conv_output_size = out_size(max_seq_length, filter_size, stride=conv_stride)
+            if self.no_transpose:
+                conv_output_size = out_size(emb_dim, filter_size, stride=conv_stride)
+            else:
+                conv_output_size = out_size(max_seq_length, filter_size, stride=conv_stride)
             total_output_size += num_filter_per_size * out_size(conv_output_size, pool_size, stride=1)
 
         self.dropout2 = nn.Dropout(dropout2)
@@ -68,7 +73,8 @@ class XMLCNNLiu(BaseModel):
     def forward(self, text):
         h = self.embedding(text) # (batch_size, length, embed_dim)
         h = self.embed_drop(h)
-        h = h.transpose(1, 2) # (batch_size, embed_dim, length)
+        if not self.no_transpose:
+            h = h.transpose(1, 2) # (batch_size, embed_dim, length)
 
         h_list = []
         for conv in self.convs:
