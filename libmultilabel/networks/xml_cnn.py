@@ -17,6 +17,8 @@ class XMLCNN(BaseModel):
         num_filter_per_size=256,
         num_pool=2,
         seed=None,
+        no_transpose=False,
+        max_seq_length=500,
         **kwargs,
     ):
         super(XMLCNN, self).__init__(embed_vecs, **kwargs)
@@ -24,12 +26,13 @@ class XMLCNN(BaseModel):
                                      "deterministic implementation but seed is"
                                      "specified. Please do not specify seed.")
 
+        self.no_transpose = no_transpose
         emb_dim = embed_vecs.shape[1]
 
         self.convs = nn.ModuleList()
         for filter_size in filter_sizes:
             conv = nn.Conv1d(
-                in_channels=emb_dim,
+                in_channels=max_seq_length if no_transpose else emb_dim,
                 out_channels=num_filter_per_size,
                 kernel_size=filter_size)
             self.convs.append(conv)
@@ -47,7 +50,8 @@ class XMLCNN(BaseModel):
     def forward(self, text):
         h = self.embedding(text) # (batch_size, length, embed_dim)
         h = self.embed_drop(h)
-        h = h.transpose(1, 2) # (batch_size, embed_dim, length)
+        if not self.no_transpose:
+            h = h.transpose(1, 2) # (batch_size, embed_dim, length)
 
         h_list = []
         for conv in self.convs:
