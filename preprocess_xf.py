@@ -4,7 +4,15 @@ import pandas as pd
 
 
 def remove_vocab_xf(text, vocabs):
-    """Remove word not in vocabulary."""
+    """Remove word not in vocabulary.
+
+    Args:
+        text (str): Text data.
+        vocabs (set): Vocabulary set.
+
+    Returns:
+        str: Text with words in the vocabulary.
+    """
     text = [t for t in text.split() if t in vocabs]
     return ' '.join(text)
 
@@ -21,18 +29,22 @@ def main():
         '--output_dir', help='Path to directory with train_bow.txt, test_bow.txt (default: %(default)s).')
     args = parser.parse_args()
 
+    os.makedirs(args.output_dir, exist_ok=True)
+
     # Read Xf.txt
     with open(args.vocab_file, 'r') as f:
         vocabs = [v.strip() for v in f.readlines()]
     vocabs = set(vocabs)
+    print(f'Read {len(vocabs)} from {args.vocab_file}.')
 
     # Output train_bow.txt, test_bow.txt
     for split in ['train', 'test']:
         path = os.path.join(args.data_dir, f'{split}.txt')
         df = pd.read_csv(path, sep='\t', header=None, error_bad_lines=False, warn_bad_lines=True)
-        df[2] = df[2].apply(lambda text: remove_vocab_xf(text))
+        df[2] = df[2].apply(lambda text: remove_vocab_xf(text, vocabs))
         output_path = os.path.join(args.output_dir, f'{split}_bow.txt')
         df.to_csv(output_path, sep='\t', index=False, header=False)
+        print(f'Output {len(df)} {split} data to {output_path}.')
 
 
 main()
