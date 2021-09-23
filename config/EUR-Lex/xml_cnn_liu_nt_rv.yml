@@ -5,6 +5,8 @@ min_vocab_freq: 1
 max_seq_length: 500
 fixed_length: True
 shuffle: True
+train_path: data/EUR-Lex/train_rv.txt
+test_path: data/EUR-Lex/test_rv.txt
 
 # train
 seed: 1337

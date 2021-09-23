@@ -7,13 +7,13 @@ fixed_length: True
 shuffle: True
 
 # train
-seed: 1337
+seed: 1126
 epochs: 100
 batch_size: 256
 optimizer: adam
 learning_rate: 0.001
 weight_decay: 0
-patience: 50
+patience: 100
 
 # eval
 eval_batch_size: 256
@@ -21,8 +21,8 @@ monitor_metrics: [P@1, P@3, P@5]
 val_metric: P@1
 
 # model
-model_name: XMLCNNLiu
-init_weight: xavier_uniform
+model_name: XMLCNNLiuDiff
+init_weight: null
 dropout: 0.25
 dropout2: 0.5
 conv_stride: 2

@@ -6,6 +6,7 @@ from .kim_cnn_v2 import KimCNNv2
 from .xml_cnn import XMLCNN
 from .xml_cnn_nh import XMLCNNnh
 from .xml_cnn_liu import XMLCNNLiu
+from .xml_cnn_liu_diff import XMLCNNLiuDiff
 
 
 def get_init_weight_func(init_weight):

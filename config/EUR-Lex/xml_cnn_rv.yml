@@ -5,10 +5,13 @@ min_vocab_freq: 1
 max_seq_length: 500
 fixed_length: True
 shuffle: True
+train_path: data/EUR-Lex/train_rv.txt
+test_path: data/EUR-Lex/test_rv.txt
+val_size: 0
 
 # train
-seed: 1337
-epochs: 100
+#seed: 1337
+epochs: 50
 batch_size: 256
 optimizer: adam
 learning_rate: 0.001
@@ -21,7 +24,7 @@ monitor_metrics: [P@1, P@3, P@5]
 val_metric: P@1
 
 # model
-model_name: XMLCNNLiu
+model_name: XMLCNN
 init_weight: xavier_uniform
 dropout: 0.25
 dropout2: 0.5
@@ -30,8 +33,8 @@ filter_sizes: [2, 4, 8]
 hidden_dim: 512
 max_seq_length: 500
 num_filter_per_size: 128 # filter channels
-pool_size: 2
-no_transpose: true
+num_pool: 4
+no_transpose: false
 
 # pretrained vocab / embeddings
 embed_file: glove.6B.300d
