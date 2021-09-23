@@ -130,6 +130,8 @@ def get_config():
                         help='Use extended binary cross entropy (default: %(default)s)')
     parser.add_argument('--checkpoint_path',
                         help='The checkpoint to warm-up with (default: %(default)s)')
+    parser.add_argument('--eval_last', action='store_true',
+                        help='The checkpoint to warm-up with (default: %(default)s)')
     parser.add_argument('-h', '--help', action='help')
 
     parser.set_defaults(**config)
@@ -150,6 +152,8 @@ def save_predictions(trainer, model, dataloader, predict_out_path):
 
 
 def main():
+    wall_time = Timer()
+
     # Get config
     config = get_config()
     config.run_name = '{}_{}_{}'.format(
@@ -247,8 +251,9 @@ def main():
 
         # trainer.fit
         trainer.fit(model, train_loader, val_loader)
-        logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
-        model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
+        if not config.eval_last:
+            logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
+            model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
 
     if 'test' in datasets:
         test_loader = data_utils.get_dataset_loader(
@@ -267,8 +272,11 @@ def main():
                 config.predict_out_path = os.path.join(checkpoint_dir, 'predictions.txt')
             save_predictions(trainer, model, test_loader, config.predict_out_path)
 
+    n_param = sum(p.numel() for p in model.network.parameters() if p.requires_grad)
+    elapsed_time = wall_time.time()
+    dump_log(log_path, meta={'n_param': n_param, 'time': elapsed_time})
+    print(f'Wall time: {elapsed_time:.2f} (s)')
+
 
 if __name__ == '__main__':
-    wall_time = Timer()
     main()
-    print(f'Wall time: {wall_time.time():.2f} (s)')

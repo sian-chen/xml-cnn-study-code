@@ -39,7 +39,7 @@ class Timer(object):
         return self.total
 
 
-def dump_log(log_path, metrics=None, split=None, config=None):
+def dump_log(log_path, metrics=None, split=None, config=None, meta=None):
     """Write log including config and the evaluation scores.
 
     Args:
@@ -64,6 +64,8 @@ def dump_log(log_path, metrics=None, split=None, config=None):
             result[split].append(metrics)
         else:
             result[split] = [metrics]
+    if meta:
+        result['meta'] = meta
 
     with open(log_path, 'w') as fp:
         json.dump(result, fp)
