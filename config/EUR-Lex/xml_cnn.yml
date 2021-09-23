@@ -20,15 +20,15 @@ monitor_metrics: [P@1, P@3, P@5]
 val_metric: P@1
 
 # model
-model_name: XMLCNNLiu
+model_name: XMLCNN
 dropout: 0.25
 dropout2: 0.5
-conv_stride: 2
+# conv_stride: 2
 filter_sizes: [2, 4, 8]
 hidden_dim: 512
 max_seq_length: 500
 num_filter_per_size: 128 # filter channels
-pool_size: 2
+num_pool: 2
 no_transpose: true
 
 # pretrained vocab / embeddings
