@@ -161,6 +161,8 @@ def main():
         Path(config.config).stem if config.config else config.model_name,
         datetime.now().strftime('%Y%m%d%H%M%S'),
     )
+
+    print(config)
     # Set up logger
     log_level = logging.WARNING if config.silent else logging.INFO
     logging.basicConfig(
@@ -254,7 +256,6 @@ def main():
                 data_workers=config.data_workers
             )
             trainer.fit(model, train_loader, val_loader)
-        if not config.eval_last:
             logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
             model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
 
