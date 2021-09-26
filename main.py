@@ -238,19 +238,22 @@ def main():
             fixed_length=config.fixed_length,
             data_workers=config.data_workers
         )
-        val_loader = data_utils.get_dataset_loader(
-            data=datasets['val'],
-            word_dict=model.word_dict,
-            classes=model.classes,
-            device=device,
-            max_seq_length=config.max_seq_length,
-            batch_size=config.eval_batch_size,
-            fixed_length=config.fixed_length,
-            data_workers=config.data_workers
-        )
 
         # trainer.fit
-        trainer.fit(model, train_loader, val_loader)
+        if config.eval_last:
+            trainer.fit(model, train_loader)
+        else:
+            val_loader = data_utils.get_dataset_loader(
+                data=datasets['val'],
+                word_dict=model.word_dict,
+                classes=model.classes,
+                device=device,
+                max_seq_length=config.max_seq_length,
+                batch_size=config.eval_batch_size,
+                fixed_length=config.fixed_length,
+                data_workers=config.data_workers
+            )
+            trainer.fit(model, train_loader, val_loader)
         if not config.eval_last:
             logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
             model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
