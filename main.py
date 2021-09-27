@@ -161,8 +161,6 @@ def main():
         Path(config.config).stem if config.config else config.model_name,
         datetime.now().strftime('%Y%m%d%H%M%S'),
     )
-
-    print(config)
     # Set up logger
     log_level = logging.WARNING if config.silent else logging.INFO
     logging.basicConfig(
