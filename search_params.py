@@ -119,7 +119,7 @@ class Trainable(tune.Trainable):
                 test_val_results[f'test_{k}'] = v
 
         # return best val result
-        if config.eval_last:
+        if self.config.eval_last:
             val_metric_dict = test_metric_dict
         else:
             val_metric_dict = trainer.test(model, test_dataloaders=val_loader)[0]
