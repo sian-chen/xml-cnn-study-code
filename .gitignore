@@ -1,3 +1,4 @@
+.vector_cache
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -130,11 +131,13 @@ dmypy.json
 *.ipynb
 
 *.swp
+*.swo
 .editorconfig
 .vscode/
 
 dataset/*
 data/*
+data
 output/*
 model_output/*
 *.xlsx
@@ -150,3 +153,4 @@ tmp*
 *.zip
 *.ckpt
 *.tfevents.*
+*.npz

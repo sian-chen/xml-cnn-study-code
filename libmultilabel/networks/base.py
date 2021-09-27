@@ -19,6 +19,7 @@ class BaseModel(nn.Module):
     ):
         super().__init__()
         self.embedding = nn.Embedding(len(embed_vecs), embed_vecs.shape[1], padding_idx=0)
+        # self.embedding = nn.Embedding(len(embed_vecs), embed_vecs.shape[1])
         self.embedding.weight.data = embed_vecs.clone()
         self.embed_drop = nn.Dropout(p=dropout)
         # TODO Put the activation function to model files: https://github.com/ASUS-AICS/LibMultiLabel/issues/42

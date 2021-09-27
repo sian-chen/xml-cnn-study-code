@@ -130,8 +130,10 @@ def get_config():
                         help='Use extended binary cross entropy (default: %(default)s)')
     parser.add_argument('--checkpoint_path',
                         help='The checkpoint to warm-up with (default: %(default)s)')
-    parser.add_argument('--eval_last', action='store_true',
-                        help='The checkpoint to warm-up with (default: %(default)s)')
+    parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--load_data', default='data.pkl')
+    parser.add_argument('--load_weight', default='weight.npz')
+
     parser.add_argument('-h', '--help', action='help')
 
     parser.set_defaults(**config)
@@ -152,8 +154,6 @@ def save_predictions(trainer, model, dataloader, predict_out_path):
 
 
 def main():
-    wall_time = Timer()
-
     # Get config
     config = get_config()
     config.run_name = '{}_{}_{}'.format(
@@ -161,6 +161,10 @@ def main():
         Path(config.config).stem if config.config else config.model_name,
         datetime.now().strftime('%Y%m%d%H%M%S'),
     )
+    if config.debug:
+        config.shuffle = False
+        config.dropout = 0.
+        config.dropout2 = 0.
     # Set up logger
     log_level = logging.WARNING if config.silent else logging.INFO
     logging.basicConfig(
@@ -172,12 +176,12 @@ def main():
     device = init_device(use_cpu=config.cpu)
 
     # Load dataset
-    datasets = data_utils.load_datasets(data_dir=config.data_dir,
-                                        train_path=config.train_path,
-                                        test_path=config.test_path,
-                                        val_path=config.val_path,
-                                        val_size=config.val_size,
-                                        is_eval=config.eval)
+    # datasets = data_utils.load_datasets(data_dir=config.data_dir,
+                                        # train_path=config.train_path,
+                                        # test_path=config.test_path,
+                                        # val_path=config.val_path,
+                                        # val_size=config.val_size,
+                                        # is_eval=config.eval)
 
     # Set up trainer
     checkpoint_dir = os.path.join(config.result_dir, config.run_name)
@@ -209,15 +213,14 @@ def main():
                 config.checkpoint_path, device=device,
                 model_name=config.model_name, silent=config.silent)
         else:
-            word_dict = data_utils.load_or_build_text_dict(
-                dataset=datasets['train'],
-                vocab_file=config.vocab_file,
-                min_vocab_freq=config.min_vocab_freq,
-                embed_file=config.embed_file,
-                embed_cache_dir=config.embed_cache_dir,
-                silent=config.silent
-            )
-            classes = data_utils.load_or_build_label(datasets, config.label_file, config.silent)
+            import dill
+            import pickle
+            dill._dill._reverse_typemap['ObjectType'] = object
+            with open(config.load_data, 'rb') as fp:
+                data = pickle.load(fp, encoding='latin1')
+            word_dict = data['vocabulary']
+            classes = list(data['label_dict'].keys())
+
             model = Model(
                 device=device,
                 classes=classes,
@@ -227,46 +230,50 @@ def main():
             )
 
         # Set up dataset loader
-        train_loader = data_utils.get_dataset_loader(
-            data=datasets['train'],
-            word_dict=model.word_dict,
-            classes=model.classes,
-            device=device,
-            max_seq_length=config.max_seq_length,
+        import torch
+        from torch.utils.data import Dataset
+        class MyDataset(Dataset):
+            def __init__(self, text, label):
+                self.text = text
+                self.label = label
+
+            def __len__(self):
+                return len(self.text)
+
+            def __getitem__(self, index):
+                return {'text': self.text[index], 'label': self.label[index]}
+
+
+        train_loader = torch.utils.data.DataLoader(
+            MyDataset(text=torch.LongTensor(data['data']['train'][0]), label=torch.IntTensor(data['data']['train'][1].toarray())),
             batch_size=config.batch_size,
             shuffle=config.shuffle,
-            fixed_length=config.fixed_length,
-            data_workers=config.data_workers
+            num_workers=config.data_workers,
+            pin_memory='cuda' in device.type,
+        )
+
+        val_tag = 'val' if 'val' in data['data'] else 'test'
+        print(f'validation: {val_tag}')
+        val_loader = torch.utils.data.DataLoader(
+            MyDataset(text=torch.LongTensor(data['data'][val_tag][0]), label=torch.IntTensor(data['data'][val_tag][1].toarray())),
+            batch_size=config.batch_size,
+            shuffle=config.shuffle,
+            num_workers=config.data_workers,
+            pin_memory='cuda' in device.type,
         )
 
         # trainer.fit
-        if config.eval_last:
-            trainer.fit(model, train_loader)
-        else:
-            val_loader = data_utils.get_dataset_loader(
-                data=datasets['val'],
-                word_dict=model.word_dict,
-                classes=model.classes,
-                device=device,
-                max_seq_length=config.max_seq_length,
-                batch_size=config.eval_batch_size,
-                fixed_length=config.fixed_length,
-                data_workers=config.data_workers
-            )
-            trainer.fit(model, train_loader, val_loader)
-            logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
-            model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
+        trainer.fit(model, train_loader, val_loader)
+        logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
+        model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
 
-    if 'test' in datasets:
-        test_loader = data_utils.get_dataset_loader(
-            data=datasets['test'],
-            word_dict=model.word_dict,
-            classes=model.classes,
-            device=device,
-            max_seq_length=config.max_seq_length,
-            batch_size=config.eval_batch_size,
-            fixed_length=config.fixed_length,
-            data_workers=config.data_workers
+    if 'test' in data['data']:
+        test_loader = torch.utils.data.DataLoader(
+            MyDataset(text=torch.LongTensor(data['data']['test'][0]), label=torch.IntTensor(data['data']['test'][1].toarray())),
+            batch_size=config.batch_size,
+            shuffle=config.shuffle,
+            num_workers=config.data_workers,
+            pin_memory='cuda' in device.type,
         )
         trainer.test(model, test_dataloaders=test_loader)
         if config.save_k_predictions > 0:
@@ -274,11 +281,8 @@ def main():
                 config.predict_out_path = os.path.join(checkpoint_dir, 'predictions.txt')
             save_predictions(trainer, model, test_loader, config.predict_out_path)
 
-    n_param = sum(p.numel() for p in model.network.parameters() if p.requires_grad)
-    elapsed_time = wall_time.time()
-    dump_log(log_path, meta={'n_param': n_param, 'time': elapsed_time})
-    print(f'Wall time: {elapsed_time:.2f} (s)')
-
 
 if __name__ == '__main__':
+    wall_time = Timer()
     main()
+    print(f'Wall time: {wall_time.time():.2f} (s)')

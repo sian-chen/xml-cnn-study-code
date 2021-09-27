@@ -114,9 +114,11 @@ def load_datasets(
         val_path = val_path or os.path.join(data_dir, 'valid.txt')
         if os.path.exists(val_path):
             datasets['val'] = _load_raw_data(val_path)
-        else:
+        elif val_size > 0:
             datasets['train'], datasets['val'] = train_test_split(
                 datasets['train'], test_size=val_size, random_state=42)
+        else:
+            datasets['val'] = datasets['test']
 
     msg = ' / '.join(f'{k}: {len(v)}' for k, v in datasets.items())
     logging.info(f'Finish loading dataset ({msg})')

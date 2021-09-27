@@ -35,6 +35,7 @@ class MultiLabelModel(pl.LightningModule):
         self.optimizer = optimizer
         self.momentum = momentum
         self.weight_decay = weight_decay
+        self.debug = kwargs.get('debug')
 
         # dump log
         self.log_path = log_path
@@ -154,12 +155,19 @@ class Model(MultiLabelModel):
         self.use_extended_loss = use_extended_loss
         super().__init__(log_path=log_path, **kwargs)
 
-        embed_vecs = self.word_dict.vectors
-        self.network = getattr(networks, model_name)(
-            embed_vecs=embed_vecs,
-            num_classes=self.num_classes,
-            **kwargs
-        ).to(device)
+        if kwargs.get('load_weight'):
+            self.network = getattr(networks, model_name)(
+                embed_vecs=None,
+                num_classes=self.num_classes,
+                **kwargs
+            ).to(device)
+        else:
+            embed_vecs = self.word_dict.vectors
+            self.network = getattr(networks, model_name)(
+                embed_vecs=embed_vecs,
+                num_classes=self.num_classes,
+                **kwargs
+            ).to(device)
 
         if init_weight is not None:
             init_weight = networks.get_init_weight_func(
@@ -175,6 +183,8 @@ class Model(MultiLabelModel):
             loss = self.extended_cross_entropy_loss(pred_logits, target_labels.float())
         else:
             loss = F.binary_cross_entropy_with_logits(pred_logits, target_labels.float())
+        if self.debug:
+            from ipdb import set_trace; set_trace()
         return loss, pred_logits
 
     def extended_cross_entropy_loss(self, pred_logits, target_labels):

@@ -16,8 +16,8 @@ class XMLCNN(BaseModel):
         hidden_dim=512,
         num_filter_per_size=256,
         num_pool=2,
-        seed=None,
         no_transpose=False,
+        seed=None,
         max_seq_length=500,
         **kwargs,
     ):
@@ -28,6 +28,7 @@ class XMLCNN(BaseModel):
 
         self.no_transpose = no_transpose
         emb_dim = embed_vecs.shape[1]
+        self.no_transpose = no_transpose
 
         self.convs = nn.ModuleList()
         for filter_size in filter_sizes:
