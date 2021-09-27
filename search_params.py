@@ -81,7 +81,7 @@ class Trainable(tune.Trainable):
         )
 
         # trainer fit
-        if config.eval_last:
+        if self.config.eval_last:
             trainer.fit(model, train_loader)
         else:
             val_loader = data_utils.get_dataset_loader(
