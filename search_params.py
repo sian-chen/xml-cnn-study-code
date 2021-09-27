@@ -79,20 +79,25 @@ class Trainable(tune.Trainable):
             fixed_length=self.config.fixed_length,
             data_workers=self.config.data_workers
         )
-        val_loader = data_utils.get_dataset_loader(
-            data=self.datasets['val'],
-            word_dict=model.word_dict,
-            classes=model.classes,
-            device=self.device,
-            max_seq_length=self.config.max_seq_length,
-            batch_size=self.config.eval_batch_size,
-            fixed_length=self.config.fixed_length,
-            data_workers=self.config.data_workers
-        )
 
-        trainer.fit(model, train_loader, val_loader)
-        logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
-        best_model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
+        # trainer fit
+        if self.config.eval_last:
+            trainer.fit(model, train_loader)
+        else:
+            val_loader = data_utils.get_dataset_loader(
+                data=self.datasets['val'],
+                word_dict=model.word_dict,
+                classes=model.classes,
+                device=self.device,
+                max_seq_length=self.config.max_seq_length,
+                batch_size=self.config.eval_batch_size,
+                fixed_length=self.config.fixed_length,
+                data_workers=self.config.data_workers
+            )
+
+            trainer.fit(model, train_loader, val_loader)
+            logging.info(f'Loading best model from `{checkpoint_callback.best_model_path}`...')
+            model = Model.load_from_checkpoint(checkpoint_callback.best_model_path)
 
         test_val_results = dict()
 
@@ -100,8 +105,8 @@ class Trainable(tune.Trainable):
         if 'test' in self.datasets:
             test_loader = data_utils.get_dataset_loader(
                 data=self.datasets['test'],
-                word_dict=best_model.word_dict,
-                classes=best_model.classes,
+                word_dict=model.word_dict,
+                classes=model.classes,
                 device=self.device,
                 max_seq_length=self.config.max_seq_length,
                 batch_size=self.config.eval_batch_size,
@@ -109,12 +114,16 @@ class Trainable(tune.Trainable):
                 data_workers=self.config.data_workers
             )
             test_metric_dict = trainer.test(
-                best_model, test_dataloaders=test_loader)[0]
+                model, test_dataloaders=test_loader)[0]
             for k, v in test_metric_dict.items():
                 test_val_results[f'test_{k}'] = v
 
         # return best val result
-        val_metric_dict = trainer.test(best_model, test_dataloaders=val_loader)[0]
+        if self.config.eval_last:
+            val_metric_dict = test_metric_dict
+        else:
+            val_metric_dict = trainer.test(model, test_dataloaders=val_loader)[0]
+
         for k, v in val_metric_dict.items():
             test_val_results[f'val_{k}'] = v
 
@@ -210,7 +219,7 @@ def main():
                         help='Number of GPU per trial (default: %(default)s)')
     parser.add_argument('--local_dir', default=os.getcwd(),
                         help='Directory to save training results of tune (default: %(default)s)')
-    parser.add_argument('--num_samples', type=int, default=50,
+    parser.add_argument('--num_samples', type=int, default=48,
                         help='Number of running trials. If the search space is `grid_search`, the same grid will be repeated `num_samples` times. (default: %(default)s)')
     parser.add_argument('--mode', default='max', choices=['min', 'max'],
                         help='Determines whether objective is minimizing or maximizing the metric attribute. (default: %(default)s)')
