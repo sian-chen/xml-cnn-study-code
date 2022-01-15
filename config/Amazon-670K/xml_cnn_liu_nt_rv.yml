@@ -1,12 +1,12 @@
 # data
-data_dir: data/EUR-Lex
-data_name: EUR-Lex
+data_dir: data/Amazon-670K
+data_name: Amazon-670K
 min_vocab_freq: 1
 max_seq_length: 500
 fixed_length: True
 shuffle: True
-train_path: data/EUR-Lex/train_rv.txt
-test_path: data/EUR-Lex/test_rv.txt
+train_path: data/Amazon-670K/train_rv.txt
+test_path: data/Amazon-670K/test_rv.txt
 val_path: xdd
 val_size: 0
 
@@ -33,7 +33,7 @@ conv_stride: 2
 filter_sizes: [2, 4, 8]
 hidden_dim: 512
 max_seq_length: 500
-num_filter_per_size: 128 # filter channels
+num_filter_per_size: 32 # filter channels
 pool_size: 2
 no_transpose: true
 

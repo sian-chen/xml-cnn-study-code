@@ -6,6 +6,9 @@ from .kim_cnn_v2 import KimCNNv2
 from .xml_cnn import XMLCNN
 from .xml_cnn_nh import XMLCNNnh
 from .xml_cnn_liu import XMLCNNLiu
+from .xml_cnn_liu_nopool import XMLCNNLiuNP
+from .xml_cnn_liu_maxpool import XMLCNNLiuMP
+from .xml_mlp import XMLMLP
 from .xml_cnn_liu_diff import XMLCNNLiuDiff
 
 

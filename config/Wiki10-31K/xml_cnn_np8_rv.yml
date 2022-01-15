@@ -1,16 +1,14 @@
 # data
-data_dir: data/EUR-Lex
-data_name: EUR-Lex
+data_dir: data/Wiki10-31K
+data_name: Wiki10-31K
 min_vocab_freq: 1
 max_seq_length: 500
-#fixed_length: True
-shuffle: True
-train_path: data/EUR-Lex/train_rv.txt
-test_path: data/EUR-Lex/test_rv.txt
+train_path: data/Wiki10-31K/train_rv.txt
+test_path: data/Wiki10-31K/test_rv.txt
+val_path: xdd
 val_size: 0
 
 # train
-seed: 1337
 epochs: 50
 batch_size: 256
 optimizer: adam
@@ -24,12 +22,15 @@ monitor_metrics: [P@1, P@3, P@5]
 val_metric: P@1
 
 # model
-model_name: KimCNNv2
-dropout: 0.2
-dropout2: 0.4
+model_name: XMLCNN
+num_filter_per_size: 384 # filter channels
 filter_sizes: [8]
-num_filter_per_size: 768 # filter channels
-no_transpose: false
+num_pool: 8
+dropout: 0.2
+hidden_dim: 1024
+dropout2: 0.4
+init_weight: kaiming_uniform
+activation: relu
 
 # pretrained vocab / embeddings
 embed_file: glove.6B.300d
