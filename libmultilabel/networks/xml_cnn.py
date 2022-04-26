@@ -26,7 +26,6 @@ class XMLCNN(BaseModel):
                                      "deterministic implementation but seed is"
                                      "specified. Please do not specify seed.")
 
-        self.no_transpose = no_transpose
         emb_dim = embed_vecs.shape[1]
         self.no_transpose = no_transpose
 
