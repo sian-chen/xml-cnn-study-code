@@ -7,7 +7,7 @@ train_path: data/Amazon-670K/train_rv.txt
 test_path: data/Amazon-670K/test_rv.txt
 
 # train
-seed: 1337
+seed: null
 epochs: 50
 batch_size: 64
 optimizer: adam
@@ -22,9 +22,10 @@ monitor_metrics: [P@1, P@3, P@5]
 val_metric: P@1
 
 # model
-model_name: KimCNNv2
-num_filter_per_size: ['choice', [96, 192, 384, 768]] # filter channels
+model_name: XMLCNNnh
+num_filter_per_size: ['choice', [96, 192]] # filter channels
 filter_sizes: [8]
+num_pool: 8
 dropout: ['choice', [0.2, 0.4, 0.6, 0.8]]
 dropout2: ['choice', [0.2, 0.4, 0.6, 0.8]]
 init_weight: kaiming_uniform
@@ -39,7 +40,7 @@ search_alg: optuna
 embed_cache_dir: .vector_cache
 
 # other parameters specified in main.py::get_args
-config: config/Amazon-670K/kim_cnn_v2_mlce_tune.yml
+config: config/Amazon-670K/xml_cnn_nh_tune.yml
 cpu: false
 data_workers: 4
 display_iter: 100
@@ -54,5 +55,5 @@ result_dir: runs
 silent: true
 val_path: null
 val_size: 0.2
-use_extended_loss: true
+use_extended_loss: false
 eval_last: false
