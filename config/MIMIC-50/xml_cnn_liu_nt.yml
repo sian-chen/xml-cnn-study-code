@@ -1,37 +1,37 @@
 # data
-data_dir: data/EUR-Lex
-data_name: EUR-Lex
-min_vocab_freq: 1
-max_seq_length: 500
+data_dir: data/MIMIC-50
+data_name: MIMIC-50
+min_vocab_freq: 3
+max_seq_length: 2500
 fixed_length: True
 shuffle: True
 
 # train
 seed: 1337
-epochs: 50
-batch_size: 256
+epochs: 100
+batch_size: 16
 optimizer: adam
-learning_rate: 0.001
+learning_rate: 0.003
 weight_decay: 0
-patience: 50
+patience: 10
 
 # eval
-eval_batch_size: 256
-monitor_metrics: [P@1, P@3, P@5]
-val_metric: P@1
+eval_batch_size: 16
+monitor_metrics: ['P@1','P@3','P@5']
+val_metric: P@5
 
 # model
-model_name: XMLCNNLiu
+model_name: XMLCNN
 init_weight: xavier_uniform
 dropout: 0.25
 dropout2: 0.5
 conv_stride: 2
 filter_sizes: [2, 4, 8]
 hidden_dim: 512
-max_seq_length: 500
 num_filter_per_size: 128 # filter channels
 pool_size: 2
 no_transpose: true
 
 # pretrained vocab / embeddings
-embed_file: glove.6B.300d
+vocab_file: data/MIMIC-50/vocab.csv
+embed_file: data/MIMIC-50/processed_full.embed

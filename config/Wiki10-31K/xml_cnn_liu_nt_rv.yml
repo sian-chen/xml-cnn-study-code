@@ -1,12 +1,12 @@
 # data
-data_dir: data/EUR-Lex
-data_name: EUR-Lex
+data_dir: data/Wiki10-31K
+data_name: Wiki10-31K
 min_vocab_freq: 1
 max_seq_length: 500
 fixed_length: True
 shuffle: True
-train_path: data/EUR-Lex/train_rv.txt
-test_path: data/EUR-Lex/test_rv.txt
+train_path: data/Wiki10-31K/train_rv.txt
+test_path: data/Wiki10-31K/test_rv.txt
 val_path: xdd
 val_size: 0
 

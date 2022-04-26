@@ -2,6 +2,27 @@ import re
 
 import numpy as np
 from torchmetrics import Metric, MetricCollection, F1, Precision, Recall
+from torchmetrics.functional.retrieval.ndcg import retrieval_normalized_dcg
+
+
+class nDCG(Metric):
+    def __init__(
+        self,
+        top_k
+    ):
+        super().__init__()
+        self.top_k = top_k
+        self.add_state("ndcg_sum", default=[], dist_reduce_fx="cat")
+
+    def update(self, preds, target):
+        assert preds.shape == target.shape
+        self.ndcg_sum += [self._metric(p, t) for p, t in zip(preds, target)]
+
+    def compute(self):
+        return torch.stack(self.ndcg_sum).mean()
+
+    def _metric(self, preds, target):
+        return retrieval_normalized_dcg(preds, target, k=self.top_k)
 
 
 def get_metrics(metric_threshold, monitor_metrics, num_classes):
@@ -27,6 +48,8 @@ def get_metrics(metric_threshold, monitor_metrics, num_classes):
         elif re.match('R@\d+', metric):
             metrics[metric] = Recall(num_classes, metric_threshold,
                                         average='samples', top_k=int(metric[2:]))
+        elif re.match('nDCG@\d+', metric):
+            metrics[metric] = nDCG(top_k=int(metric[5:]))
         elif metric not in ['Micro-Precision', 'Micro-Recall', 'Micro-F1', 'Macro-F1', 'Another-Macro-F1']:
             raise ValueError(f'Invalid metric: {metric}')
 
