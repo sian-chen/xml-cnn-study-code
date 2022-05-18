@@ -1,12 +1,12 @@
 # data
-data_dir: data/EUR-Lex
-data_name: EUR-Lex
+data_dir: data/AmazonCat-13K
+data_name: AmazonCat-13K
 min_vocab_freq: 1
 max_seq_length: 500
 fixed_length: True
 shuffle: True
-train_path: data/EUR-Lex/train_rv.txt
-test_path: data/EUR-Lex/test_rv.txt
+train_path: data/AmazonCat-13K/train_rv.txt
+test_path: data/AmazonCat-13K/test_rv.txt
 val_size: 0.2
 
 # train
@@ -46,7 +46,7 @@ search_alg: optuna
 embed_cache_dir: .vector_cache
 
 # other parameters specified in main.py::get_args
-config: config/EUR-Lex/xml_cnn_liu_nt_rv_tune.yml
+config: config/AmazonCat-13K/xml_cnn_liu_nt_rv_tune.yml
 cpu: false
 data_workers: 4
 display_iter: 100
