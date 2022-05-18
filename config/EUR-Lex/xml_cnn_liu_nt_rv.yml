@@ -28,7 +28,7 @@ val_metric: P@1
 model_name: XMLCNNLiu
 init_weight: xavier_uniform
 dropout: 0.25
-dropout2: 0.5
+dropout2: 0.25
 conv_stride: 2
 filter_sizes: [2, 4, 8]
 hidden_dim: 512

@@ -1,20 +1,21 @@
 # data
-data_dir: data/EUR-Lex
-data_name: EUR-Lex
+data_dir: data/Amazon-670K
+data_name: Amazon-670K
 min_vocab_freq: 1
 max_seq_length: 500
 fixed_length: True
 shuffle: True
-train_path: data/EUR-Lex/train_rv.txt
-test_path: data/EUR-Lex/test_rv.txt
-val_size: 0.2
+train_path: data/Amazon-670K/train_rv.txt
+test_path: data/Amazon-670K/test_rv.txt
+val_path: xdd
+val_size: 0
 
 # train
 seed: null
 epochs: 50
 batch_size: 256
 optimizer: adam
-learning_rate: ['choice', [0.0003, 0.001, 0.003]]
+learning_rate: ['choice', [0.0003, 0.001]]
 weight_decay: 0
 patience: 5
 
@@ -25,15 +26,15 @@ val_metric: P@1
 
 # model
 model_name: XMLCNNLiu
-num_filter_per_size: ['choice', [256, 128, 64]] # filter channels
+init_weight: xavier_uniform
+num_filter_per_size: ['choice', [64, 32, 16]] # filter channels
 filter_sizes: [2, 4, 8]
 conv_stride: 2
 num_pool: 1
 pool_size: 2
-dropout: ['choice', [0, 0.25, 0.5]]
+dropout: ['choice', [0.25, 0.5]]
 hidden_dim: ['choice', [1024, 512, 256]]
 dropout2: ['choice', [0.25, 0.5, 0.75]]
-init_weight: xavier_uniform
 activation: relu
 no_transpose: true
 
@@ -46,7 +47,7 @@ search_alg: optuna
 embed_cache_dir: .vector_cache
 
 # other parameters specified in main.py::get_args
-config: config/EUR-Lex/xml_cnn_liu_nt_rv_tune.yml
+config: config/Amazon-670K/xml_cnn_liu_nt_rv_tune.yml
 cpu: false
 data_workers: 4
 display_iter: 100

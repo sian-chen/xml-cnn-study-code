@@ -31,7 +31,7 @@ dropout: 0.25
 dropout2: 0.5
 conv_stride: 2
 filter_sizes: [2, 4, 8]
-hidden_dim: 512
+hidden_dim: 1024
 max_seq_length: 500
 num_filter_per_size: 128 # filter channels
 pool_size: 2
