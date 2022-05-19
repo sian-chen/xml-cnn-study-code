@@ -1,170 +1,52 @@
-# LibMultiLabel — a Library for Multi-label Text Classification
+# Even the Simplest Baseline Needs Careful Re-investigation: A Case Study on XML-CNN
 
-LibMultiLabel is a simple tool with the following functionalities.
-
-- end-to-end services from raw texts to final evaluation/analysis
-- support of common network architectures for multi-label text classification
-- easy hyper-parameter selection
-
-This is an on-going development so many improvements are still being made. Comments are very welcome.
-
-## Environments and Installation
-- Python: 3.6+
-- CUDA: 10.2 (if GPU used)
-- Pytorch 1.8+
-
-If you have a different version of CUDA, go to the [website](https://pytorch.org/) for the detail of PyTorch installation.
-
-To install the latest development version, run:
-```
-pip3 install -r requirements.txt
-```
-
-## Table of Contents
-- [Quick Start via an Example](#Quick-Start-via-an-Example)
-- [Usage](#Usage)
-- [Data Format](#Data-Format)
-- [Training and Prediction](#Training-and-Prediction)
-
-## Quick Start via an Example
-### Step 1. Data Preparation
-- Create a data sub-directory within `LibMultiLabel` and go to this sub-directory.
-```sh
-mkdir -p data/rcv1
-cd data/rcv1
-```
-- Download the `rcv1` dataset from [LIBSVM data sets](https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets) by the following commands.
-
-```sh
-wget -O train.txt.bz2 https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multilabel/rcv1_topics_train.txt.bz2
-wget -O test.txt.bz2 https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multilabel/rcv1_topics_test.txt.bz2
-```
-- Uncompress data files and change the directory back to `LibMultiLabel`.
-```sh
-bzip2 -d *.bz2
-cd ../..
-```
-
-### Step 2. Training and Prediction
-Train a cnn model and predict the test set by an example config. Use `--cpu` to run the program on the cpu.
-```
-python3 main.py --config example_config/rcv1/kim_cnn.yml
-```
-
-## Usage
-The LibMultiLabel toolkit uses a yaml file to configure the dataset and the training process. At a high level, the config file is split into four parts:
-
-- **data**: the data config consists of data paths that tell where to place the datasets, pre-trained word embeddings, and vocabularies.
-
-- **model**: the model config defines the parameters that are related to the network definition (i.e., model name).
-
-- **train**: the train config specifies the hyperparameters (i.e., batch size, learning rate, etc.) used when training a model.
-
-- **eval**: the eval config decides metrics monitored or reported during the evaluation process.
+This is the code for the NAACL 2022 paper "[Even the Simplest Baseline Needs Careful Re-investigation: A Case Study on XML-CNN](https://arxiv.org/abs/xxxx.xxxxx)". The repository contains an older version of [LibMultiLabel](https://github.com/ASUS-AICS/LibMultiLabel).
+Please feel free to contact [Si-An Chen](https://scholar.google.com/citations?hl=en&user=XtkmEncAAAAJ) if you have any questions about the code/paper.
 
 
-For more information, run `--help` or check [the example configs](./example_config).
-```
-python3 main.py --help
-```
-Each parameter can also be specified through the command line.
-
-## Data Format
-
-Put labels and texts in the training, validation, and test set separately in `train.txt`, `valid.txt`, and `test.txt`, or specifying the path by the arguments  `train_path`, `valid_path`, and `test_path`. If validation set is not provided, then the program internally splits the training set to two parts for training and validation. To specify the size of the validation set, use `val_size` in one of the following two ways:
-- a ratio in [0,1] to indicate the percentage of training data allocated for validation
-- an integer to indicate the number of training data allocated for validation
-
-### Examples of a training file:
-- one sample per line
-- seperate ID, labels and texts by `<TAB>` (the ID column is optional)
-- labels are split by spaces
-
-With ID column:
-```
-2286<TAB>E11 ECAT M11 M12 MCAT<TAB>recov recov recov recov excit ...
-2287<TAB>C24 CCAT<TAB>uruguay uruguay compan compan compan ...
-```
-
-Without ID column:
-```
-E11 ECAT M11 M12 MCAT<TAB>recov recov recov recov excit ...
-C24 CCAT<TAB>uruguay uruguay compan compan compan ...
-```
-
-### Examples of a test file:
-In the test set, the labels are used to calculate accuracy or errors. If it's unknown, any string (even an empty one) is fine. For example,
-
-With ID column:
-```
-2286<TAB><TAB>recov recov recov recov excit ...
-2287<TAB><TAB>uruguay uruguay compan compan compan ...
-```
-
-Without ID column:
-```
-<TAB>recov recov recov recov excit ...
-<TAB>uruguay uruguay compan compan compan ...
-```
-
-## Training and Prediction
-### Training
-In the training procedure, you can build a model from scratch or start from some pre-obtained information.
-```
-python3 main.py --config CONFIG_PATH [--load_checkpoint CHECKPOINT_PATH] \
-[--embed_file EMBED_NAME_OR_EMBED_PATH] [--vocab_file VOCAB_CSV_PATH]
-```
-- **config**: configure parameters in a yaml file. See the section [Usage](#Usage).
-
-If a model was trained before by this package, the training procedure can start with it.
-
-- **load_checkpoint**: specify the path to a pre-trained model.
-
-To use your own word embeddings or vocabulary set, specify the following parameters:
-
-- **embed_file**: choose one of the pretrained embeddings defined in [torchtext](https://pytorch.org/text/0.9.0/vocab.html#torchtext.vocab.Vocab.load_vectors) or specify the path to your word embeddings with each line containing a word followed by its vectors. Example:
-    ```=
-    team -0.17901678383350372 1.2405720949172974 ...
-    language 0.8667483925819397 5.001194953918457 ...
-    ```
-- **vocab_file**: set the file path to a predefined vocabulary set that contains lines of words.
-
-For the validation process in the training procedure, you can evaluate the model with a set of evaluation metrics. Set `monitor_metrics` to define what you want to print on the screen. The argument `val_metric` is the metric for picking the best model. Example:
-```yaml
-monitor_metrics: [P@1, P@3, P@5]
-val_metric: P@1
-```
-
-If `test_path` is specified or `DATA_DIR/test.txt` exists, the model with the highest `val_metric` will be evaluated after training.
-
-### Prediction
-To deploy/evaluate a model (i.e., a pre-obtained checkpoint), you can predict a test set by the following command.
-```
-python3 main.py --eval --config CONFIG_PATH --load_checkpoint CHECKPOINT_PATH --test_path TEST_DATA_PATH --save_k_predictions K --predict_out_path PREDICT_OUT_PATH
-```
-- Use `--save_k_predictions` to save the top K predictions for each instance in the test set. K=100 if not specified.
-- Use `--predict_out_path` to specify the file for storing the predicted top-K labels/scores.
+## Dataset
+All datasets used in our experiments can be downloaded from [here](https://drive.google.com/drive/folders/1Z_Xs6zr8NNOWSFfJX5R-6eStEijsZUrZ?usp=sharing).
+Each dataset contains 5 files:
+- `Xf.txt`: vocabulary set of the bag-of-word (BOW) features used in [Extreme Multi-Label Repository](http://manikvarma.org/downloads/XC/XMLRepository.html). We use this set to generate `train_rv.txt` and `test_rv.txt`.
+- `train.txt`, `test.txt: training set and test set obtained from [AttentionXML](https://github.com/yourh/AttentionXML).
+- `train_rv.txt`, `test_rv.txt`: training set and test set with reduced vocabulary set (`Xf.txt`).
+More details can be found the Appendix in our [paper].
 
 
-## Hyperparameter Search
-Parameter selection is known to be extremely important in machine learning practice; see a powerful reminder in "[this paper](https://www.csie.ntu.edu.tw/~cjlin/papers/parameter_selection/acl2021_parameter_selection.pdf)". Here we leverage [Ray Tune](https://docs.ray.io/en/master/tune/index.html), which is a python library for hyperparameter tuning, to select parameters. Due to the dependency of Ray Tune, first make sure your python version is not greater than 3.8. Then, install the related packages with:
-```
-pip3 install -Ur requirements_parameter_search.txt
-```
-We provide a program `search_params.py` to demonstrate how to run LibMultiLabel with Ray Tune. An example is as follows.
-```
-python3 search_params.py --config example_config/rcv1/cnn_tune.yml --search_alg basic_variant
-```
+## Experiment Result
 
-- **config**: configure *all* parameters in a yaml file. You can define a continuous, a discrete, or other types of search space (see a list [here](https://docs.ray.io/en/master/tune/api_docs/search_space.html#tune-sample-docs)). An example of configuring the parameters is presented as follows:
-```yaml
-dropout: ['grid_search', [0.2, 0.4, 0.6, 0.8]] # grid search
-num_filter_per_size: ['choice', [350, 450, 550]] # discrete
-learning_rate: ['uniform', 0.2, 0.8] # continuous
-activation: tanh # not for hyperparameter search
-```
-- **search_alg**: specify a search algorithm considered in [Ray Tune](https://docs.ray.io/en/master/tune/api_docs/suggestion.html). We support basic_variant (e.g., grid/random), bayesopt, and optuna. You can also define `search_alg` in the config file. For example, if you want to run grid search over `learning_rate`, the config is like this:
-```yaml
-search_alg: basic_variant
-learning_rate: ['grid_search', [0.2, 0.4, 0.6, 0.8]]
-```
+### EUR-Lex
+| Loss/Hidden layer/Max-pooling | P@1 | P@3 | P@5 | NDCG@1 | NDCG@3 | NDCG@5 | Config |
+|---|---|---|---|---|---|---|---|
+| CE/N/standard | 72.78 | 59.84 | 49.94 | 72.78 | 59.84 | 49.94 | [Cfg](config/EUR-Lex/) |
+| BCE/N/standard | 80.93 | 66.38 | 55.34 | 80.93 | 66.38 | 55.34 | [Cfg](config/EUR-Lex/) |
+| BCE/N/dynamic | 77.67 | 64.94 | 53.29 | 77.88 | 64.58 | 53.38 | [Cfg](config/EUR-Lex/) |
+| BCE/Y/standard | 76.40 | 62.78 | 51.88 | 76.56 | 62.92 | 51.84 | [Cfg](config/EUR-Lex/) |
+| BCE/Y/dynamic | 77.98 | 65.11 | 53.90 | 78.94 | 65.77 | 54.15 | [Cfg](config/EUR-Lex/) |
+
+### Wiki10-31K
+| Loss/Hidden layer/Max-pooling | P@1 | P@3 | P@5 | NDCG@1 | NDCG@3 | NDCG@5 | Config |
+|---|---|---|---|---|---|---|---|
+| CE/N/standard | 80.70 | 64.83 | 55.43 | 80.70 | 64.83 | 55.43 | [Cfg](config/Wiki10-31K/) |
+| BCE/N/standard | 82.78 | 68.07 | 57.63 | 82.78 | 68.07 | 57.63 | [Cfg](config/Wiki10-31K/) |
+| BCE/N/dynamic | 83.15 | 70.32 | 59.91 | 83.37 | 70.64 | 60.16 | [Cfg](config/Wiki10-31K/) |
+| BCE/Y/standard | 80.89 | 67.89 | 58.17 | 81.73 | 68.82 | 58.65 | [Cfg](config/Wiki10-31K/) |
+| BCE/Y/dynamic | 84.19 | 71.55 | 61.14 | 84.70 | 71.80 | 61.03 | [Cfg](config/Wiki10-31K/) |
+
+### AmazonCat-13K
+| Loss/Hidden layer/Max-pooling | P@1 | P@3 | P@5 | NDCG@1 | NDCG@3 | NDCG@5 | Config |
+|---|---|---|---|---|---|---|---|
+| CE/N/standard | 91.01 | 75.07 | 60.50 | 92.85 | 76.90 | 61.76 | [Cfg](config/AmazonCat-13K/) |
+| BCE/N/standard | 93.31 | 78.02 | 62.93 | 93.41 | 78.11 | 62.95 | [Cfg](config/AmazonCat-13K/) |
+| BCE/N/dynamic | 93.63 | 78.55 | 63.42 | 93.65 | 78.56 | 63.41 | [Cfg](config/AmazonCat-13K/) |
+| BCE/Y/standard | 94.73 | 79.64 | 63.95 | 94.73 | 79.64 | 63.94 | [Cfg](config/AmazonCat-13K/) |
+| BCE/Y/dynamic | 94.79 | 80.04 | 64.49 | 94.78 | 80.03 | 64.52 | [Cfg](config/AmazonCat-13K/) |
+
+### Amazon-670K
+| Loss/Hidden layer/Max-pooling | P@1 | P@3 | P@5 | NDCG@1 | NDCG@3 | NDCG@5 | Config |
+|---|---|---|---|---|---|---|---|
+| CE/N/standard | 27.14 | 24.70 | 22.70 | 27.23 | 24.65 | 22.70 | [Cfg](config/Amazon-670K/) |
+| BCE/N/standard | 33.38 | 29.99 | 27.47 | 33.38 | 29.99 | 27.47 | [Cfg](config/Amazon-670K/) |
+| BCE/N/dynamic | 34.58 | 30.89 | 28.24 | 34.61 | 30.91 | 28.25 | [Cfg](config/Amazon-670K/) |
+| BCE/Y/standard | 33.62 | 30.15 | 27.62 | 33.86 | 30.27 | 27.69 | [Cfg](config/Amazon-670K/) |
+| BCE/Y/dynamic | 35.53 | 31.82 | 29.03 | 35.69 | 31.89 | 29.08 | [Cfg](config/Amazon-670K/) |
