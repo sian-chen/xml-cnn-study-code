@@ -8,7 +8,7 @@ Please feel free to contact [Si-An Chen](https://scholar.google.com/citations?hl
 All datasets used in our experiments can be downloaded from [here](https://drive.google.com/drive/folders/1Z_Xs6zr8NNOWSFfJX5R-6eStEijsZUrZ?usp=sharing).
 Each dataset contains 5 files:
 - `Xf.txt`: vocabulary set of the bag-of-word (BOW) features used in [Extreme Multi-Label Repository](http://manikvarma.org/downloads/XC/XMLRepository.html). We use this set to generate `train_rv.txt` and `test_rv.txt`.
-- `train.txt`, `test.txt: training set and test set obtained from [AttentionXML](https://github.com/yourh/AttentionXML).
+- `train.txt`, `test.txt`: training set and test set obtained from [AttentionXML](https://github.com/yourh/AttentionXML).
 - `train_rv.txt`, `test_rv.txt`: training set and test set with reduced vocabulary set (`Xf.txt`).
 More details can be found the Appendix in our [paper].
 
