@@ -1,10 +1,12 @@
 # Even the Simplest Baseline Needs Careful Re-investigation: A Case Study on XML-CNN
 
-This is the code for the NAACL 2022 paper "[Even the Simplest Baseline Needs Careful Re-investigation: A Case Study on XML-CNN](https://arxiv.org/abs/xxxx.xxxxx)". The repository contains an older version of [LibMultiLabel](https://github.com/ASUS-AICS/LibMultiLabel).
+This is the code for the NAACL 2022 paper "[Even the Simplest Baseline Needs Careful Re-investigation: A Case Study on XML-CNN](https://www.csie.ntu.edu.tw/~cjlin/papers/xmlcnn/xml_cnn_study.pdf)".
+The repository is used to reproduce the experimental results in our paper.
+However, results may be slightly different because of the randomness and the environment.
 Please feel free to contact [Si-An Chen](https://scholar.google.com/citations?hl=en&user=XtkmEncAAAAJ) if you have any questions about the code/paper.
 
 
-## Dataset
+## Datasets
 All datasets used in our experiments can be downloaded from [here](https://drive.google.com/drive/folders/1Z_Xs6zr8NNOWSFfJX5R-6eStEijsZUrZ?usp=sharing).
 Each dataset contains 5 files:
 - `Xf.txt`: vocabulary set of the bag-of-word (BOW) features used in [Extreme Multi-Label Repository](http://manikvarma.org/downloads/XC/XMLRepository.html). We use this set to generate `train_rv.txt` and `test_rv.txt`.
@@ -12,19 +14,29 @@ Each dataset contains 5 files:
 - `train_rv.txt`, `test_rv.txt`: training set and test set with reduced vocabulary set (`Xf.txt`).
 More details can be found the Appendix in our [paper].
 
-## Usage
+
+## Explanation of directories and files
+- `XML-CNN/`: The code for the SIGIR 2017 paper "Deep learning for extreme multi-label text classification" by Liu et al.
+- `config/`: The config files used in our experiments.
+- `libmultilabel/`: The main experiment code. Modified from an older version of [LibMultiLabel](https://github.com/ASUS-AICS/LibMultiLabel).
+- `libmultilabel/networks/`: The source code of different network architectures used in our experiments.
+- `main.py`: The script for training and testing.
+- `search_params.py`: The script for hyperparameter tuning.
+
+
+## How to run the experiments
 1. Download the datasets and place them in `data/`.
-2. Run the command:
+2. Run the command with a specified config file (see the next section):
 ```
 # train
 python main.py --config [CONFIG_FILE]
 
 # test
-python main.py --config [CONFIG_FILE] --eval --checkpoint_path
+python main.py --config [CONFIG_FILE] --eval --checkpoint_path [CHECKPOINT_PATH]
 ```
 
 
-## Experiment Result
+## Experiment Result (Table 7 and Table 15)
 
 ### EUR-Lex
 | Loss/Hidden layer/Max-pooling | P@1 | P@3 | P@5 | NDCG@1 | NDCG@3 | NDCG@5 | Config |
