@@ -22,6 +22,7 @@ More details can be found the Appendix in our [paper].
 - `libmultilabel/networks/`: The source code of different network architectures used in our experiments.
 - `main.py`: The script for training and testing.
 - `search_params.py`: The script for hyperparameter tuning.
+- `clean_tab.py`, `remove_vocab.py`: The scripts for data pre-processing.
 
 
 ## How to run the experiments
