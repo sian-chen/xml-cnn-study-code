@@ -12,6 +12,17 @@ Each dataset contains 5 files:
 - `train_rv.txt`, `test_rv.txt`: training set and test set with reduced vocabulary set (`Xf.txt`).
 More details can be found the Appendix in our [paper].
 
+## Usage
+1. Download the datasets and place them in `data/`.
+2. Run the command:
+```
+# train
+python main.py --config [CONFIG_FILE]
+
+# test
+python main.py --config [CONFIG_FILE] --eval --checkpoint_path
+```
+
 
 ## Experiment Result
 
