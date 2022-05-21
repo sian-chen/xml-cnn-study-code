@@ -64,12 +64,12 @@ Dynamic Max-pooling (DM):
 
 | Method/CNN/DM | P@1 | P@3 | P@5 | NDCG@1 | NDCG@3 | NDCG@5 | Config |
 |---|---|---|---|---|---|---|---|
-| Kim/E/NA | 45.38 | 34.02 | 27.72 | 45.38 | 36.72 | 33.04 | [Cfg](config/EUR-Lex/) |
-| Kim/W/NA | 75.83 | 61.08 | 50.19 | 75.83 | 64.75 | 58.93 | [Cfg](config/EUR-Lex/) |
-| XML/E/Eq. (7) | 75.96 | 60.56 | 49.23 | 75.96 | 64.31 | 58.20 | [Cfg](config/EUR-Lex/) |
-| XML/W/Eq. (7) | 58.09 | 45.19 | 37.06 | 58.09 | 48.30 | 43.81 | [Cfg](config/EUR-Lex/) |
-| XML/E/Eq. (6) | 63.03 | 48.31 | 39.32 | 63.03 | 51.92 | 46.88 | [Cfg](config/EUR-Lex/) |
-| XML/W/Eq. (6) | 72.65 | 58.56 | 47.54 | 72.65 | 62.10 | 56.07 | [Cfg](config/EUR-Lex/) |
+| Kim/E/NA | 45.38 | 34.02 | 27.72 | 45.38 | 36.72 | 33.04 | [Cfg](config/EUR-Lex/kim_cnn_v2_nt.yml) |
+| Kim/W/NA | 75.83 | 61.08 | 50.19 | 75.83 | 64.75 | 58.93 | [Cfg](config/EUR-Lex/kim_cnn_v2.yml) |
+| XML/E/Eq. (7) | 75.96 | 60.56 | 49.23 | 75.96 | 64.31 | 58.20 | [Cfg](config/EUR-Lex/xml_cnn_liu_nt.yml) |
+| XML/W/Eq. (7) | 58.09 | 45.19 | 37.06 | 58.09 | 48.30 | 43.81 | [Cfg](config/EUR-Lex/xml_cnn_liu.yml) |
+| XML/E/Eq. (6) | 63.03 | 48.31 | 39.32 | 63.03 | 51.92 | 46.88 | [Cfg](config/EUR-Lex/xml_cnn_nt.yml) |
+| XML/W/Eq. (6) | 75.73 | 61.82 | 50.82 | 75.73 | 65.31 | 59.54 | [Cfg](config/EUR-Lex/xml_cnn.yml) |
 
 
 ## Experiment Result (Table 7 and Table 15)
