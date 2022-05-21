@@ -38,7 +38,7 @@ More details can be found the Appendix in our [paper](https://www.csie.ntu.edu.t
 
 ## How to run the experiments
 1. Download the datasets and place them in `data/`.
-2. Run the command with a specified config file (see the next section):
+2. Run the command with a specified config file (provided in the following sections):
 ```
 # train
 python main.py --config [CONFIG_FILE]
@@ -52,9 +52,11 @@ python main.py --config [CONFIG_FILE] --eval --checkpoint_path [CHECKPOINT_PATH]
 Method:
 - Kim: Kim-CNN
 - XML: XML-CNN
+
 CNN sweeping direction (CNN):
 - E: embeddings
 - W: words
+
 Dynamic Max-pooling (DM):
 - NA: Not applicable
 - Eq. (7): dynamic max-pooling in Liu et al.'s implementation
