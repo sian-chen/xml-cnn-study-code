@@ -3,6 +3,17 @@
 This is the code for the NAACL 2022 paper "[Even the Simplest Baseline Needs Careful Re-investigation: A Case Study on XML-CNN](https://www.csie.ntu.edu.tw/~cjlin/papers/xmlcnn/xml_cnn_study.pdf)".
 The repository is used to reproduce the experimental results in our paper.
 However, results may be slightly different because of the randomness and the environment.
+If you find our work useful, please consider citing the following paper:
+```bib
+@inproceedings{SC2022,
+  author = {Si-An Chen and Jie-Jyun Liu and Tsung-Han Yang and
+Hsuan-Tien Lin and Chih-Jen Lin},
+  title = {Even the Simplest Baseline Needs Careful Re-investigation: A Case Study on {XML-CNN}},
+  booktitle = {Proceedings of the Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)},
+  month = jul,
+  year = 2022,
+}
+```
 Please feel free to contact [Si-An Chen](https://scholar.google.com/citations?hl=en&user=XtkmEncAAAAJ) if you have any questions about the code/paper.
 
 
@@ -12,7 +23,7 @@ Each dataset contains 5 files:
 - `Xf.txt`: vocabulary set of the bag-of-word (BOW) features used in [Extreme Multi-Label Repository](http://manikvarma.org/downloads/XC/XMLRepository.html). We use this set to generate `train_rv.txt` and `test_rv.txt`.
 - `train.txt`, `test.txt`: training set and test set obtained from [AttentionXML](https://github.com/yourh/AttentionXML).
 - `train_rv.txt`, `test_rv.txt`: training set and test set with reduced vocabulary set (`Xf.txt`).
-More details can be found the Appendix in our [paper].
+More details can be found the Appendix in our [paper](https://www.csie.ntu.edu.tw/~cjlin/papers/xmlcnn/xml_cnn_study.pdf).
 
 
 ## Explanation of directories and files
@@ -35,6 +46,28 @@ python main.py --config [CONFIG_FILE]
 # test
 python main.py --config [CONFIG_FILE] --eval --checkpoint_path [CHECKPOINT_PATH]
 ```
+
+
+## Experiment Result (Table 4 and Table 14)
+Method:
+- Kim: Kim-CNN
+- XML: XML-CNN
+CNN sweeping direction (CNN):
+- E: embeddings
+- W: words
+Dynamic Max-pooling (DM):
+- NA: Not applicable
+- Eq. (7): dynamic max-pooling in Liu et al.'s implementation
+- Eq. (6): dynamic max-pooling in Liu et al.'s paper
+
+| Method/CNN/DM | P@1 | P@3 | P@5 | NDCG@1 | NDCG@3 | NDCG@5 | Config |
+|---|---|---|---|---|---|---|---|
+| Kim/E/NA | 45.38 | 34.02 | 27.72 | 45.38 | 36.72 | 33.04 | [Cfg](config/EUR-Lex/) |
+| Kim/W/NA | 75.83 | 61.08 | 50.19 | 75.83 | 64.75 | 58.93 | [Cfg](config/EUR-Lex/) |
+| XML/E/Eq. (7) | 75.96 | 60.56 | 49.23 | 75.96 | 64.31 | 58.20 | [Cfg](config/EUR-Lex/) |
+| XML/W/Eq. (7) | 58.09 | 45.19 | 37.06 | 58.09 | 48.30 | 43.81 | [Cfg](config/EUR-Lex/) |
+| XML/E/Eq. (6) | 63.03 | 48.31 | 39.32 | 63.03 | 51.92 | 46.88 | [Cfg](config/EUR-Lex/) |
+| XML/W/Eq. (6) | 72.65 | 58.56 | 47.54 | 72.65 | 62.10 | 56.07 | [Cfg](config/EUR-Lex/) |
 
 
 ## Experiment Result (Table 7 and Table 15)
