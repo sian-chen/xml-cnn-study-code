@@ -1,5 +1,6 @@
 import re
 
+import torch
 import numpy as np
 from torchmetrics import Metric, MetricCollection, F1, Precision, Recall
 from torchmetrics.functional.retrieval.ndcg import retrieval_normalized_dcg
